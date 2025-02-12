@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Valentine’s Day Fate Predictor</title>
+    <title>🔮 Valentine’s Day Fate 🔮</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -12,6 +12,7 @@
             color: #d81b60;
             text-align: center;
             padding-top: 50px;
+            overflow: hidden;
         }
         .container {
             max-width: 400px;
@@ -19,37 +20,101 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
         }
         .btn-custom {
             background-color: #d81b60;
             color: white;
             border-radius: 5px;
+            transition: 0.3s ease-in-out;
         }
         .btn-custom:hover {
             background-color: #ad1457;
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
         }
         #result {
             margin-top: 20px;
             font-weight: bold;
             font-size: 18px;
-            animation: fadeIn 1s ease-in-out;
+            opacity: 0;
         }
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Typing dots animation */
+        .loading {
+            display: inline-block;
+            font-size: 18px;
+        }
+        .dot {
+            animation: blink 1.5s infinite;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        /* Floating Hearts Animation */
+        .heart {
+            position: fixed;
+            bottom: -50px;
+            font-size: 20px;
+            opacity: 0.7;
+            animation: floatUp 5s infinite linear;
+            color: #ff4081;
+        }
+        @keyframes floatUp {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100vh); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Floating hearts -->
+    <script>
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.innerHTML = "❤️";
+            document.body.appendChild(heart);
+
+            const size = Math.random() * 20 + 10; 
+            heart.style.fontSize = `${size}px`;
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        setInterval(createHeart, 500);
+    </script>
+
     <div class="container">
         <h1 class="mb-3">🔮 Valentine's Day Fate 🔮</h1>
-        <p>Ilagay ang pangalan mo at alamin kung anong kapalaran mo ngayong Araw ng mga Puso!</p>
+        <p>Ilagay ang pangalan mo at alamin ang iyong kapalaran ngayong Araw ng mga Puso!</p>
         
         <input type="text" id="name" class="form-control my-3" placeholder="Ilagay ang pangalan mo dito">
-        <button class="btn btn-custom w-100" onclick="predictFate()">Ano ang kapalaran ko?</button>
+        <button class="btn btn-custom w-100" id="predict-btn" onclick="predictFate()">Ano ang kapalaran ko?</button>
         
-        <p id="result" class="mt-3"></p>
+        <p id="result"></p>
     </div>
 
     <script>
@@ -78,12 +143,26 @@
             ];
             
             const name = document.getElementById("name").value;
+            const button = document.getElementById("predict-btn");
+            const result = document.getElementById("result");
+
             if (name.trim() === "") {
-                document.getElementById("result").innerText = "Pakilagay naman ang pangalan mo! 🤨";
-            } else {
-                const randomFate = fates[Math.floor(Math.random() * fates.length)];
-                document.getElementById("result").innerText = `${name}, ito ang kapalaran mo ngayong Valentine's: ${randomFate}`;
+                result.innerText = "Pakilagay naman ang pangalan mo! 🤨";
+                result.style.opacity = "1";
+                return;
             }
+
+            button.classList.add("shake"); // Add shake animation
+            setTimeout(() => button.classList.remove("shake"), 500);
+
+            result.style.opacity = "1";
+            result.innerHTML = `Hinuhulaan<span class="loading"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>`;
+
+            setTimeout(() => {
+                const randomFate = fates[Math.floor(Math.random() * fates.length)];
+                result.innerText = `${name}, ito ang kapalaran mo ngayong Valentine's: ${randomFate}`;
+                result.style.animation = "fadeIn 1s ease-in-out";
+            }, 2000);
         }
     </script>
 
